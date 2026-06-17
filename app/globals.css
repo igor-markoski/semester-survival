@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(1200px 800px at 50% -10%, #15233b 0%, #0a0f1c 55%, #060912 100%);
+  color: #e2e8f0;
+  font-family: var(--font-geist-sans), system-ui, Arial, sans-serif;
+}
+
+/* Gentle ambient float for the decorative background emojis */
+@keyframes ss-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(6deg);
+  }
+}
+.ss-float {
+  animation: ss-float 6s ease-in-out infinite;
+}
+
+/* Overlay fade-in */
+@keyframes ss-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.ss-fade {
+  animation: ss-fade 0.25s ease-out;
+}
+
+/* Soft pulse for combo chips, golden power-ups & "new record" */
+@keyframes ss-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.78;
+  }
+}
+.ss-pulse {
+  animation: ss-pulse 1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-float,
+  .ss-pulse {
+    animation: none;
+  }
 }
