@@ -118,7 +118,7 @@ export default function SemesterSurvival() {
   const [result, setResult] = useState<LevelResult | null>(null);
   const [endlessResult, setEndlessResult] = useState<EndlessResult | null>(null);
   const [quizIndex, setQuizIndex] = useState<number | null>(null);
-  const [toast, setToast] = useState<AchievementDef | null>(null);
+  const [toasts, setToasts] = useState<{ id: number; def: AchievementDef }[]>([]);
 
   const simRef = useRef<Sim>(view);
   const keysRef = useRef({ left: false, right: false });
@@ -130,34 +130,35 @@ export default function SemesterSurvival() {
   const weekRef = useRef(week);
   const pendingLastRef = useRef(false);
   const recentQuizRef = useRef<number[]>([]);
-  const toastQueueRef = useRef<AchievementDef[]>([]);
-  const toastBusyRef = useRef(false);
-  saveRef.current = save;
-  screenRef.current = screen;
-  scaleRef.current = scale;
-  weekRef.current = week;
+  const toastIdRef = useRef(0);
+
+  // Mirror the latest render values into refs so the rAF loop, keyboard handler,
+  // and other callbacks can read fresh values (ref writes belong in effects).
+  useEffect(() => {
+    saveRef.current = save;
+    screenRef.current = screen;
+    scaleRef.current = scale;
+    weekRef.current = week;
+  });
 
   // --- load persisted save on mount ----------------------------------------
   useEffect(() => {
     const loaded = loadSave();
     saveRef.current = loaded;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time hydration from localStorage
     setSave(loaded);
     sound.setMuted(loaded.muted);
   }, []);
 
-  // --- achievement toast queue ---------------------------------------------
-  const pumpToast = useCallback(() => {
-    if (toastBusyRef.current) return;
-    const next = toastQueueRef.current.shift();
-    if (!next) return;
-    toastBusyRef.current = true;
-    setToast(next);
-    sound.unlock();
-    window.setTimeout(() => {
-      setToast(null);
-      toastBusyRef.current = false;
-      pumpToast();
-    }, 2300);
+  // --- achievement toasts --------------------------------------------------
+  const showToasts = useCallback((defs: AchievementDef[]) => {
+    if (!defs.length) return;
+    sound.achievement();
+    for (const def of defs) {
+      const id = toastIdRef.current++;
+      setToasts((t) => [...t, { id, def }]);
+      window.setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), 2400);
+    }
   }, []);
 
   // --- persistence helper --------------------------------------------------
@@ -166,12 +167,9 @@ export default function SemesterSurvival() {
       saveRef.current = next;
       setSave(next);
       saveSave(next);
-      if (unlocked.length) {
-        toastQueueRef.current.push(...unlocked);
-        pumpToast();
-      }
+      showToasts(unlocked);
     },
-    [pumpToast],
+    [showToasts],
   );
 
   // --- run lifecycle -------------------------------------------------------
@@ -398,7 +396,11 @@ export default function SemesterSurvival() {
 
   const shakeAmp = showBoard && view.shakeTimer > 0 ? (view.shakeTimer / SHAKE_DURATION) * 8 : 0;
   const shakeStyle = shakeAmp
-    ? { transform: `translate(${(Math.random() * 2 - 1) * shakeAmp}px, ${(Math.random() * 2 - 1) * shakeAmp}px)` }
+    ? {
+        transform: `translate(${Math.sin(view.shakeTimer * 120) * shakeAmp}px, ${
+          Math.cos(view.shakeTimer * 97) * shakeAmp
+        }px)`,
+      }
     : undefined;
 
   let overlay: ReactNode = null;
@@ -459,7 +461,9 @@ export default function SemesterSurvival() {
               {save.muted ? "🔇" : "🔊"}
             </button>
 
-            {toast && <AchievementToast emoji={toast.emoji} name={toast.name} />}
+            {toasts.map((t, i) => (
+              <AchievementToast key={t.id} emoji={t.def.emoji} name={t.def.name} index={i} />
+            ))}
 
             {showBoard ? (
               <Board

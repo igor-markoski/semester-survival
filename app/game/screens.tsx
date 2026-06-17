@@ -1,14 +1,7 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef, useState } from "react";
-import {
-  BOARD_W,
-  clamp,
-  type Difficulty,
-  DIFFICULTIES,
-  INNER_H,
-  MODIFIERS,
-} from "./config";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { BOARD_W, type Difficulty, DIFFICULTIES, INNER_H, MODIFIERS } from "./config";
 import { ACHIEVEMENTS } from "./achievements";
 import { type CampaignLevel, CAMPAIGN_LEVELS, objectiveLabel } from "./levels";
 import { type Question, QUIZ_TIME } from "./quiz";
@@ -455,17 +448,16 @@ export function QuizScreen({
   const [picked, setPicked] = useState<number | null>(null);
   const [timeLeft, setTimeLeft] = useState(QUIZ_TIME);
   const done = useRef(false);
-  const resultRef = useRef(onResult);
-  resultRef.current = onResult;
-  const answerRef = useRef(question.answer);
-  answerRef.current = question.answer;
 
-  const finish = (idx: number) => {
-    if (done.current) return;
-    done.current = true;
-    setPicked(idx);
-    window.setTimeout(() => resultRef.current(idx === answerRef.current), 1100);
-  };
+  const finish = useCallback(
+    (idx: number) => {
+      if (done.current) return;
+      done.current = true;
+      setPicked(idx);
+      window.setTimeout(() => onResult(idx === question.answer), 1100);
+    },
+    [onResult, question.answer],
+  );
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -479,8 +471,7 @@ export function QuizScreen({
       });
     }, 1000);
     return () => window.clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [finish]);
 
   return (
     <OverlayShell tone="amber">
@@ -653,9 +644,12 @@ export function EndlessOver({
 // ---------------------------------------------------------------------------
 // Achievement toast
 // ---------------------------------------------------------------------------
-export function AchievementToast({ emoji, name }: { emoji: string; name: string }) {
+export function AchievementToast({ emoji, name, index = 0 }: { emoji: string; name: string; index?: number }) {
   return (
-    <div className="ss-fade pointer-events-none absolute left-1/2 top-4 z-40 -translate-x-1/2">
+    <div
+      className="ss-fade pointer-events-none absolute left-1/2 z-40 -translate-x-1/2"
+      style={{ top: 16 + index * 50 }}
+    >
       <div className="flex items-center gap-2 rounded-full bg-emerald-500/90 px-4 py-2 text-sm font-black text-white shadow-xl ring-1 ring-emerald-300/50">
         <span className="text-lg">{emoji}</span>
         <span>Постигнување: {name}</span>
