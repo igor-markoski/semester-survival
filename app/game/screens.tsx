@@ -1,8 +1,34 @@
 "use client";
 
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  BedDouble,
+  Check,
+  Clock,
+  Coins,
+  Crown,
+  FileText,
+  Frown,
+  Gem,
+  GraduationCap,
+  Home,
+  Infinity as InfinityIcon,
+  Lock,
+  Map as MapIcon,
+  PartyPopper,
+  Pause,
+  Play,
+  RotateCcw,
+  ShoppingCart,
+  Star,
+  Target,
+  Trophy,
+  X,
+} from "lucide-react";
 import { BOARD_W, type Difficulty, DIFFICULTIES, INNER_H, MODIFIERS } from "./config";
 import { ACHIEVEMENTS } from "./achievements";
+import { GameIcon, type IconKey } from "./icons";
 import { type CampaignLevel, CAMPAIGN_LEVELS, objectiveLabel } from "./levels";
 import { type Question, QUIZ_TIME } from "./quiz";
 import type { SaveState } from "./save";
@@ -40,21 +66,19 @@ function Btn({
       onClick={onClick}
       disabled={disabled}
       className={`rounded-full bg-gradient-to-b ${TONE[tone]} font-black text-white shadow-xl outline-none transition-transform duration-150 focus-visible:ring-4 ${
-        big ? "px-10 py-3.5 text-lg" : "px-5 py-2 text-sm"
+        big ? "px-9 py-3 text-lg" : "px-5 py-2 text-sm"
       } ${disabled ? "cursor-not-allowed opacity-40" : "hover:scale-105 active:scale-95"}`}
     >
-      {children}
+      <span className="inline-flex items-center justify-center gap-2">{children}</span>
     </button>
   );
 }
 
-export function Stars({ count, size = "text-3xl" }: { count: number; size?: string }) {
+export function Stars({ count, size = 28 }: { count: number; size?: number }) {
   return (
-    <div className={`flex justify-center gap-1 ${size}`}>
+    <div className="flex justify-center gap-1">
       {[0, 1, 2].map((i) => (
-        <span key={i} className={i < count ? "" : "opacity-25 grayscale"}>
-          ⭐
-        </span>
+        <Star key={i} size={size} className={i < count ? "fill-amber-300 text-amber-300" : "text-slate-600"} />
       ))}
     </div>
   );
@@ -67,7 +91,7 @@ function ScreenFrame({
   children,
 }: {
   title: string;
-  subtitle?: string;
+  subtitle?: ReactNode;
   onBack?: () => void;
   children: ReactNode;
 }) {
@@ -81,14 +105,14 @@ function ScreenFrame({
           <button
             type="button"
             onClick={onBack}
-            className="rounded-full bg-white/5 px-3 py-1.5 text-sm font-bold text-slate-200 ring-1 ring-white/10 transition hover:bg-white/10"
+            className="inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1.5 text-sm font-bold text-slate-200 ring-1 ring-white/10 transition hover:bg-white/10"
           >
-            ← Назад
+            <ArrowLeft size={15} /> Назад
           </button>
         )}
         <div className="flex flex-col">
           <h2 className="text-xl font-black text-white">{title}</h2>
-          {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
+          {subtitle && <div className="text-xs text-slate-400">{subtitle}</div>}
         </div>
       </header>
       <div className="flex-1 overflow-y-auto p-6">{children}</div>
@@ -98,11 +122,7 @@ function ScreenFrame({
 
 function OverlayShell({ children, tone }: { children: ReactNode; tone?: Tone }) {
   const glow =
-    tone === "emerald"
-      ? "from-emerald-500/15"
-      : tone === "rose"
-        ? "from-rose-500/15"
-        : "from-sky-500/10";
+    tone === "emerald" ? "from-emerald-500/15" : tone === "rose" ? "from-rose-500/15" : "from-sky-500/10";
   return (
     <div className={`ss-fade absolute inset-0 z-10 flex items-center justify-center bg-gradient-to-b ${glow} to-slate-950/92 px-8 backdrop-blur-sm`}>
       {children}
@@ -136,8 +156,8 @@ export function MainMenu({
       style={{ width: BOARD_W, height: INNER_H }}
       className="ss-fade flex flex-col items-center justify-center gap-5 rounded-2xl bg-[radial-gradient(120%_100%_at_50%_0%,#1e293b_0%,#0f172a_60%,#0b1120_100%)] p-8 ring-1 ring-white/10"
     >
-      <div className="text-center">
-        <div className="text-5xl">🎓</div>
+      <div className="flex flex-col items-center text-center">
+        <GraduationCap size={52} className="text-sky-300" />
         <h2 className="mt-1 bg-gradient-to-r from-sky-300 via-cyan-200 to-emerald-300 bg-clip-text text-4xl font-black text-transparent">
           Преживеј го Семестарот
         </h2>
@@ -146,22 +166,22 @@ export function MainMenu({
 
       <div className="flex w-full max-w-sm flex-col gap-3">
         <Btn onClick={onCampaign} tone="emerald" big>
-          ▶ Кампања (Семестар)
+          <Play size={20} className="fill-white" /> Кампања (Семестар)
         </Btn>
         <div className="flex gap-3">
           <button
             type="button"
             onClick={onEndless}
-            className="flex-1 rounded-full bg-gradient-to-b from-amber-400 to-orange-500 px-4 py-2.5 text-sm font-black text-white shadow-lg transition hover:scale-[1.03] active:scale-95"
+            className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-b from-amber-400 to-orange-500 px-4 py-2.5 text-sm font-black text-white shadow-lg transition hover:scale-[1.03] active:scale-95"
           >
-            ♾️ Бескрајно
+            <InfinityIcon size={18} /> Бескрајно
           </button>
           <button
             type="button"
             onClick={onAchievements}
-            className="flex-1 rounded-full bg-white/5 px-4 py-2.5 text-sm font-black text-slate-100 ring-1 ring-white/10 transition hover:bg-white/10"
+            className="flex flex-1 items-center justify-center gap-2 rounded-full bg-white/5 px-4 py-2.5 text-sm font-black text-slate-100 ring-1 ring-white/10 transition hover:bg-white/10"
           >
-            🏆 Постигнувања
+            <Trophy size={17} className="text-amber-300" /> Постигнувања
           </button>
         </div>
       </div>
@@ -170,20 +190,20 @@ export function MainMenu({
       <div className="flex flex-col items-center gap-1.5">
         <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-400">Тежина</span>
         <div className="flex gap-2">
-          {(Object.values(DIFFICULTIES)).map((d) => {
+          {Object.values(DIFFICULTIES).map((d) => {
             const active = save.difficulty === d.id;
             return (
               <button
                 key={d.id}
                 type="button"
                 onClick={() => onDifficulty(d.id)}
-                className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
+                className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-sm font-bold transition ${
                   active
                     ? "bg-sky-500/90 text-white ring-2 ring-sky-300"
                     : "bg-white/5 text-slate-300 ring-1 ring-white/10 hover:bg-white/10"
                 }`}
               >
-                {d.emoji} {d.label}
+                <GameIcon name={d.icon} size={15} /> {d.label}
               </button>
             );
           })}
@@ -192,10 +212,20 @@ export function MainMenu({
 
       {/* Stats */}
       <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1 text-sm text-slate-300">
-        <span>💰 {save.coins}</span>
-        <span>⭐ {totalStars(save)}/{CAMPAIGN_LEVELS.length * 3}</span>
-        <span>🏆 {unlocked}/{ACHIEVEMENTS.length}</span>
-        {save.endlessBest > 0 && <span>♾️ Рекорд: {save.endlessBest}</span>}
+        <span className="inline-flex items-center gap-1">
+          <Coins size={15} className="text-amber-300" /> {save.coins}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Star size={15} className="fill-amber-300 text-amber-300" /> {totalStars(save)}/{CAMPAIGN_LEVELS.length * 3}
+        </span>
+        <span className="inline-flex items-center gap-1">
+          <Trophy size={15} className="text-amber-300" /> {unlocked}/{ACHIEVEMENTS.length}
+        </span>
+        {save.endlessBest > 0 && (
+          <span className="inline-flex items-center gap-1">
+            <InfinityIcon size={15} className="text-sky-300" /> {save.endlessBest}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -218,7 +248,16 @@ export function CampaignMap({
   return (
     <ScreenFrame
       title="Семестар — мапа"
-      subtitle={`💰 ${save.coins} монети · ⭐ ${totalStars(save)}/${CAMPAIGN_LEVELS.length * 3}`}
+      subtitle={
+        <span className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1">
+            <Coins size={13} className="text-amber-300" /> {save.coins}
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Star size={13} className="fill-amber-300 text-amber-300" /> {totalStars(save)}/{CAMPAIGN_LEVELS.length * 3}
+          </span>
+        </span>
+      }
       onBack={onBack}
     >
       <div className="grid grid-cols-3 gap-4">
@@ -238,15 +277,16 @@ export function CampaignMap({
                   : "bg-white/5 text-white ring-white/10 hover:scale-[1.03] hover:bg-white/10"
               }`}
             >
-              <span className="text-[11px] font-bold uppercase tracking-widest text-sky-300/80">
-                Недела {lvl.week} {lvl.isBoss && "👑"}
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-widest text-sky-300/80">
+                Недела {lvl.week}
+                {lvl.isBoss && <Crown size={12} className="text-amber-300" />}
               </span>
-              <span className="text-3xl">{locked ? "🔒" : lvl.emoji}</span>
+              {locked ? <Lock size={30} className="text-slate-500" /> : <GameIcon name={lvl.icon} size={30} />}
               <span className="text-sm font-bold">{lvl.name}</span>
               {locked ? (
                 <span className="text-[11px] text-slate-500">Заклучено</span>
               ) : (
-                <Stars count={stars} size="text-base" />
+                <Stars count={stars} size={15} />
               )}
               {done && !locked && <span className="text-[10px] text-emerald-300/80">положено</span>}
             </button>
@@ -255,7 +295,7 @@ export function CampaignMap({
       </div>
       <div className="mt-6 flex justify-center">
         <Btn onClick={onShop} tone="amber">
-          🛒 Продавница за надградби
+          <ShoppingCart size={16} /> Продавница за надградби
         </Btn>
       </div>
     </ScreenFrame>
@@ -279,32 +319,39 @@ export function LevelIntro({
       style={{ width: BOARD_W, height: INNER_H }}
       className="ss-fade flex flex-col items-center justify-center gap-4 rounded-2xl bg-[radial-gradient(120%_100%_at_50%_0%,#1e293b_0%,#0f172a_60%,#0b1120_100%)] p-8 text-center ring-1 ring-white/10"
     >
-      <span className="text-[11px] font-bold uppercase tracking-widest text-sky-300/80">
-        Недела {level.week} {level.isBoss && "· 👑 Босс"}
+      <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-sky-300/80">
+        Недела {level.week}
+        {level.isBoss && (
+          <>
+            · <Crown size={13} className="text-amber-300" /> Босс
+          </>
+        )}
       </span>
-      <div className="text-5xl">{level.emoji}</div>
+      <GameIcon name={level.icon} size={52} />
       <h2 className="text-3xl font-black text-white">{level.name}</h2>
       <p className="max-w-md text-sm text-slate-300">{level.blurb}</p>
 
       <div className="rounded-2xl bg-white/5 px-6 py-3 ring-1 ring-white/10">
         <div className="text-[11px] font-semibold uppercase tracking-widest text-emerald-300/80">Цел</div>
-        <div className="text-lg font-black text-white">🎯 {objectiveLabel(level.objective)}</div>
+        <div className="flex items-center justify-center gap-2 text-lg font-black text-white">
+          <Target size={20} className="text-emerald-300" /> {objectiveLabel(level.objective)}
+        </div>
       </div>
 
-      {level.modifiers.length > 0 && (
+      {(level.modifiers.length > 0 || level.hasQuiz) && (
         <div className="flex flex-wrap justify-center gap-2">
           {level.modifiers.map((m) => (
             <span
               key={m}
               title={MODIFIERS[m].desc}
-              className="rounded-full bg-rose-500/15 px-3 py-1 text-xs font-bold text-rose-200 ring-1 ring-rose-400/30"
+              className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 px-3 py-1 text-xs font-bold text-rose-200 ring-1 ring-rose-400/30"
             >
-              {MODIFIERS[m].emoji} {MODIFIERS[m].name}
+              <GameIcon name={MODIFIERS[m].icon} size={14} /> {MODIFIERS[m].name}
             </span>
           ))}
           {level.hasQuiz && (
-            <span className="rounded-full bg-amber-400/15 px-3 py-1 text-xs font-bold text-amber-200 ring-1 ring-amber-400/30">
-              📝 Бонус прашање
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-400/15 px-3 py-1 text-xs font-bold text-amber-200 ring-1 ring-amber-400/30">
+              <FileText size={14} /> Бонус прашање
             </span>
           )}
         </div>
@@ -312,10 +359,10 @@ export function LevelIntro({
 
       <div className="mt-2 flex gap-3">
         <Btn onClick={onBack} tone="slate">
-          ← Назад
+          <ArrowLeft size={16} /> Назад
         </Btn>
         <Btn onClick={onStart} tone="emerald" big>
-          Започни ▶
+          <Play size={20} className="fill-white" /> Започни
         </Btn>
       </div>
     </div>
@@ -335,7 +382,15 @@ export function Shop({
   onBack: () => void;
 }) {
   return (
-    <ScreenFrame title="Продавница" subtitle={`💰 ${save.coins} монети`} onBack={onBack}>
+    <ScreenFrame
+      title="Продавница"
+      subtitle={
+        <span className="inline-flex items-center gap-1">
+          <Coins size={13} className="text-amber-300" /> {save.coins} монети
+        </span>
+      }
+      onBack={onBack}
+    >
       <div className="grid grid-cols-2 gap-3">
         {UPGRADES.map((u) => {
           const owned = save.upgrades[u.id] ?? 0;
@@ -345,15 +400,12 @@ export function Shop({
           return (
             <div key={u.id} className="flex flex-col gap-2 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">{u.emoji}</span>
+                <GameIcon name={u.icon} size={26} />
                 <div className="flex flex-col">
                   <span className="text-sm font-black text-white">{u.name}</span>
                   <div className="mt-0.5 flex gap-1">
                     {Array.from({ length: u.maxLevel }).map((_, i) => (
-                      <span
-                        key={i}
-                        className={`h-1.5 w-5 rounded-full ${i < owned ? "bg-emerald-400" : "bg-white/15"}`}
-                      />
+                      <span key={i} className={`h-1.5 w-5 rounded-full ${i < owned ? "bg-emerald-400" : "bg-white/15"}`} />
                     ))}
                   </div>
                 </div>
@@ -363,7 +415,7 @@ export function Shop({
                 type="button"
                 disabled={maxed || !afford}
                 onClick={() => onBuy(u.id)}
-                className={`mt-auto rounded-full px-4 py-2 text-sm font-black transition ${
+                className={`mt-auto inline-flex items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-black transition ${
                   maxed
                     ? "bg-emerald-500/20 text-emerald-300"
                     : afford
@@ -371,7 +423,15 @@ export function Shop({
                       : "cursor-not-allowed bg-white/5 text-slate-500"
                 }`}
               >
-                {maxed ? "✓ Максимум" : `💰 ${cost}`}
+                {maxed ? (
+                  <>
+                    <Check size={15} /> Максимум
+                  </>
+                ) : (
+                  <>
+                    <Coins size={14} /> {cost}
+                  </>
+                )}
               </button>
             </div>
           );
@@ -398,11 +458,9 @@ export function Achievements({ save, onBack }: { save: SaveState; onBack: () => 
                 got ? "bg-emerald-500/10 ring-emerald-400/30" : "bg-white/5 ring-white/10"
               }`}
             >
-              <span className={`text-3xl ${got ? "" : "opacity-30 grayscale"}`}>{a.emoji}</span>
+              {got ? <GameIcon name={a.icon} size={30} /> : <Lock size={28} className="text-slate-500" />}
               <div className="flex flex-col">
-                <span className={`text-sm font-black ${got ? "text-white" : "text-slate-400"}`}>
-                  {got ? a.name : "🔒 " + a.name}
-                </span>
+                <span className={`text-sm font-black ${got ? "text-white" : "text-slate-400"}`}>{a.name}</span>
                 <span className="text-xs text-slate-400">{a.desc}</span>
               </div>
             </div>
@@ -420,17 +478,17 @@ export function PauseScreen({ onResume, onQuit }: { onResume: () => void; onQuit
   return (
     <OverlayShell>
       <div className="flex flex-col items-center text-center">
-        <div className="text-5xl">⏸️</div>
+        <Pause size={48} className="fill-white text-white" />
         <h2 className="mt-2 text-3xl font-black text-white">Пауза</h2>
         <p className="mt-2 text-sm text-slate-300">
           Притисни <span className="text-slate-100">P</span> / <span className="text-slate-100">Esc</span> за продолжување.
         </p>
         <div className="mt-6 flex gap-3">
           <Btn onClick={onQuit} tone="slate">
-            🏠 Мени
+            <Home size={16} /> Мени
           </Btn>
           <Btn onClick={onResume} tone="sky" big>
-            Продолжи ▶
+            <Play size={20} className="fill-white" /> Продолжи
           </Btn>
         </div>
       </div>
@@ -477,10 +535,10 @@ export function QuizScreen({
     <OverlayShell tone="amber">
       <div className="flex w-full max-w-lg flex-col items-center gap-4 text-center">
         <div className="flex items-center gap-3">
-          <span className="text-3xl">📝</span>
+          <FileText size={26} className="text-amber-300" />
           <h2 className="text-2xl font-black text-amber-200">Бонус прашање</h2>
-          <span className={`tabular-nums text-lg font-black ${timeLeft <= 4 ? "text-rose-300" : "text-slate-300"}`}>
-            ⏱ {timeLeft}
+          <span className={`inline-flex items-center gap-1 tabular-nums text-lg font-black ${timeLeft <= 4 ? "text-rose-300" : "text-slate-300"}`}>
+            <Clock size={18} /> {timeLeft}
           </span>
         </div>
         <p className="text-lg font-bold text-white">{question.q}</p>
@@ -498,9 +556,7 @@ export function QuizScreen({
                 type="button"
                 disabled={picked !== null}
                 onClick={() => finish(i)}
-                className={`rounded-xl px-5 py-3 text-left text-base font-bold ring-1 transition ${cls} ${
-                  picked === null ? "active:scale-[0.98]" : ""
-                }`}
+                className={`rounded-xl px-5 py-3 text-left text-base font-bold ring-1 transition ${cls} ${picked === null ? "active:scale-[0.98]" : ""}`}
               >
                 {opt}
               </button>
@@ -508,8 +564,16 @@ export function QuizScreen({
           })}
         </div>
         {picked !== null && (
-          <p className={`text-sm font-black ${picked === question.answer ? "text-emerald-300" : "text-rose-300"}`}>
-            {picked === question.answer ? "✓ Точно! Бонус монети." : "✗ Грешка."}
+          <p className={`inline-flex items-center gap-1 text-sm font-black ${picked === question.answer ? "text-emerald-300" : "text-rose-300"}`}>
+            {picked === question.answer ? (
+              <>
+                <Check size={16} /> Точно! Бонус монети.
+              </>
+            ) : (
+              <>
+                <X size={16} /> Грешка.
+              </>
+            )}
           </p>
         )}
       </div>
@@ -533,18 +597,26 @@ export function LevelComplete({
   return (
     <OverlayShell tone="emerald">
       <div className="flex flex-col items-center text-center">
-        <h2 className="text-3xl font-black text-emerald-300">Неделата е положена! 🎉</h2>
-        <Stars count={stars} size="mt-3 text-4xl" />
-        {flawless && <p className="mt-1 text-sm font-bold text-amber-300">💎 Без изгубен живот!</p>}
-        <div className="mt-4 rounded-2xl bg-white/5 px-8 py-3 ring-1 ring-white/10">
-          <span className="text-lg font-black text-white">💰 +{coins} монети</span>
+        <h2 className="inline-flex items-center gap-2 text-3xl font-black text-emerald-300">
+          Неделата е положена! <PartyPopper size={28} className="text-amber-300" />
+        </h2>
+        <div className="mt-3">
+          <Stars count={stars} size={36} />
+        </div>
+        {flawless && (
+          <p className="mt-1 inline-flex items-center gap-1 text-sm font-bold text-amber-300">
+            <Gem size={15} className="text-cyan-300" /> Без изгубен живот!
+          </p>
+        )}
+        <div className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-white/5 px-8 py-3 text-lg font-black text-white ring-1 ring-white/10">
+          <Coins size={20} className="text-amber-300" /> +{coins} монети
         </div>
         <div className="mt-6 flex gap-3">
           <Btn onClick={onShop} tone="amber">
-            🛒 Продавница
+            <ShoppingCart size={16} /> Продавница
           </Btn>
           <Btn onClick={onNext} tone="emerald" big>
-            Продолжи ▶
+            <Play size={20} className="fill-white" /> Продолжи
           </Btn>
         </div>
       </div>
@@ -556,14 +628,16 @@ export function LevelFailed({ onRetry, onMap }: { onRetry: () => void; onMap: ()
   return (
     <OverlayShell tone="rose">
       <div className="flex flex-col items-center text-center">
-        <h2 className="text-3xl font-black text-rose-300">Не успеа... 😢</h2>
+        <h2 className="inline-flex items-center gap-2 text-3xl font-black text-rose-300">
+          Не успеа... <Frown size={28} />
+        </h2>
         <p className="mt-2 text-sm text-slate-300">Целта не е исполнета. Пробај повторно!</p>
         <div className="mt-6 flex gap-3">
           <Btn onClick={onMap} tone="slate">
-            🗺️ Мапа
+            <MapIcon size={16} /> Мапа
           </Btn>
           <Btn onClick={onRetry} tone="rose" big>
-            Обиди се пак ↻
+            <RotateCcw size={18} /> Обиди се пак
           </Btn>
         </div>
       </div>
@@ -583,18 +657,20 @@ export function CampaignComplete({
   return (
     <OverlayShell tone="emerald">
       <div className="flex flex-col items-center text-center">
-        <div className="text-6xl">🎓</div>
+        <GraduationCap size={60} className="text-emerald-300" />
         <h2 className="mt-2 text-3xl font-black text-emerald-300">Дипломиравте!</h2>
         <p className="mt-2 max-w-md text-sm text-slate-300">
-          Го положивте целиот семестар низ сите 6 недели. Честитки, инженеру! 🥳
+          Го положивте целиот семестар низ сите 6 недели. Честитки, инженеру!
         </p>
-        <div className="mt-3 text-2xl">⭐ {stars} / {CAMPAIGN_LEVELS.length * 3}</div>
+        <div className="mt-3 inline-flex items-center gap-2 text-2xl font-black text-white">
+          <Star size={24} className="fill-amber-300 text-amber-300" /> {stars} / {CAMPAIGN_LEVELS.length * 3}
+        </div>
         <div className="mt-6 flex gap-3">
           <Btn onClick={onMenu} tone="slate">
-            🏠 Мени
+            <Home size={16} /> Мени
           </Btn>
           <Btn onClick={onEndless} tone="amber" big>
-            ♾️ Бескрајно
+            <InfinityIcon size={20} /> Бескрајно
           </Btn>
         </div>
       </div>
@@ -618,22 +694,26 @@ export function EndlessOver({
   return (
     <OverlayShell tone="rose">
       <div className="flex flex-col items-center text-center">
-        <h2 className="text-3xl font-black text-rose-300">Крај на сесијата 😴</h2>
+        <h2 className="inline-flex items-center gap-2 text-3xl font-black text-rose-300">
+          Крај на сесијата <BedDouble size={28} />
+        </h2>
         <div className="mt-4 rounded-2xl bg-white/5 px-8 py-4 ring-1 ring-white/10">
           <div className="text-xs font-semibold uppercase tracking-widest text-slate-400">Резултат</div>
           <div className="text-4xl font-black text-white">{score}</div>
           {isNewBest ? (
-            <div className="ss-pulse mt-1 text-sm font-black text-amber-300">🏆 Нов рекорд!</div>
+            <div className="ss-pulse mt-1 inline-flex items-center gap-1 text-sm font-black text-amber-300">
+              <Trophy size={15} /> Нов рекорд!
+            </div>
           ) : (
             <div className="mt-1 text-xs text-slate-400">Рекорд: {best}</div>
           )}
         </div>
         <div className="mt-6 flex gap-3">
           <Btn onClick={onMenu} tone="slate">
-            🏠 Мени
+            <Home size={16} /> Мени
           </Btn>
           <Btn onClick={onRetry} tone="amber" big>
-            Пак ↻
+            <RotateCcw size={18} /> Пак
           </Btn>
         </div>
       </div>
@@ -644,14 +724,11 @@ export function EndlessOver({
 // ---------------------------------------------------------------------------
 // Achievement toast
 // ---------------------------------------------------------------------------
-export function AchievementToast({ emoji, name, index = 0 }: { emoji: string; name: string; index?: number }) {
+export function AchievementToast({ icon, name, index = 0 }: { icon: IconKey; name: string; index?: number }) {
   return (
-    <div
-      className="ss-fade pointer-events-none absolute left-1/2 z-40 -translate-x-1/2"
-      style={{ top: 16 + index * 50 }}
-    >
+    <div className="ss-fade pointer-events-none absolute left-1/2 z-40 -translate-x-1/2" style={{ top: 16 + index * 50 }}>
       <div className="flex items-center gap-2 rounded-full bg-emerald-500/90 px-4 py-2 text-sm font-black text-white shadow-xl ring-1 ring-emerald-300/50">
-        <span className="text-lg">{emoji}</span>
+        <GameIcon name={icon} size={18} className="text-white" />
         <span>Постигнување: {name}</span>
       </div>
     </div>

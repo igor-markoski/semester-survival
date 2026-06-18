@@ -3,11 +3,12 @@
 // every run via computeEffects().
 // ---------------------------------------------------------------------------
 import { COFFEE_POINTS, PLAYER_W } from "./config";
+import type { IconKey } from "./icons";
 
 export interface UpgradeDef {
   id: string;
   name: string;
-  emoji: string;
+  icon: IconKey;
   desc: string;
   maxLevel: number;
   costs: number[]; // costs[i] = price to buy level i+1
@@ -17,7 +18,7 @@ export const UPGRADES: UpgradeDef[] = [
   {
     id: "paddle",
     name: "Поширок паддл",
-    emoji: "🧱",
+    icon: "paddle",
     desc: "+16px ширина по ниво — полесно фаќање.",
     maxLevel: 3,
     costs: [120, 200, 320],
@@ -25,7 +26,7 @@ export const UPGRADES: UpgradeDef[] = [
   {
     id: "coffee",
     name: "Поскапо кафе",
-    emoji: "☕",
+    icon: "coffee",
     desc: "+1 поен по фатено кафе.",
     maxLevel: 3,
     costs: [140, 240, 380],
@@ -33,15 +34,15 @@ export const UPGRADES: UpgradeDef[] = [
   {
     id: "power",
     name: "Подолги бонуси",
-    emoji: "⏱️",
-    desc: "+25% траење на ⚡ и 🧠.",
+    icon: "timer",
+    desc: "+25% траење на бонусите (магнет/фокус).",
     maxLevel: 3,
     costs: [150, 260, 400],
   },
   {
     id: "life",
     name: "Дополнителен живот",
-    emoji: "❤️",
+    icon: "heart",
     desc: "+1 почетен живот.",
     maxLevel: 2,
     costs: [260, 460],
@@ -49,7 +50,7 @@ export const UPGRADES: UpgradeDef[] = [
   {
     id: "magnet",
     name: "Почетен магнет",
-    emoji: "⚡",
+    icon: "energy",
     desc: "Започни секое ниво со 3с магнет.",
     maxLevel: 1,
     costs: [350],
@@ -57,7 +58,7 @@ export const UPGRADES: UpgradeDef[] = [
   {
     id: "shield",
     name: "Почетен штит",
-    emoji: "🛡️",
+    icon: "shield",
     desc: "Започни секое ниво со штит.",
     maxLevel: 1,
     costs: [420],

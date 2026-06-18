@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { Coffee, Gamepad2, GraduationCap, Volume2, VolumeX } from "lucide-react";
 import {
   BOARD_W,
   CARD_PAD,
@@ -440,10 +441,19 @@ export default function SemesterSurvival() {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <header className="text-center">
+      <header className="relative flex w-full items-center justify-center gap-2 px-12">
+        <GraduationCap className="text-sky-300" size={28} />
         <h1 className="bg-gradient-to-r from-sky-400 via-cyan-300 to-emerald-300 bg-clip-text text-2xl font-black tracking-tight text-transparent drop-shadow sm:text-3xl">
-          Преживеј го Семестарот 🎓
+          Преживеј го Семестарот
         </h1>
+        <button
+          type="button"
+          onClick={toggleMute}
+          aria-label={save.muted ? "Вклучи звук" : "Исклучи звук"}
+          className="absolute right-0 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/5 text-slate-200 ring-1 ring-white/10 transition hover:bg-white/10"
+        >
+          {save.muted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+        </button>
       </header>
 
       <div style={{ width: OUTER_W * scale, height: OUTER_H * scale }}>
@@ -452,17 +462,8 @@ export default function SemesterSurvival() {
             style={{ width: OUTER_W, height: OUTER_H, padding: CARD_PAD, ...shakeStyle }}
             className="relative flex flex-col rounded-[28px] bg-gradient-to-b from-slate-900 to-slate-950 shadow-2xl shadow-black/60 ring-1 ring-white/10"
           >
-            <button
-              type="button"
-              onClick={toggleMute}
-              aria-label={save.muted ? "Вклучи звук" : "Исклучи звук"}
-              className="absolute right-3 top-3 z-40 flex h-9 w-9 items-center justify-center rounded-full bg-white/5 text-lg ring-1 ring-white/10 transition hover:bg-white/10"
-            >
-              {save.muted ? "🔇" : "🔊"}
-            </button>
-
             {toasts.map((t, i) => (
-              <AchievementToast key={t.id} emoji={t.def.emoji} name={t.def.name} index={i} />
+              <AchievementToast key={t.id} icon={t.def.icon} name={t.def.name} index={i} />
             ))}
 
             {showBoard ? (
@@ -505,9 +506,13 @@ export default function SemesterSurvival() {
         </div>
       </div>
 
-      <p className="max-w-xl text-center text-xs text-slate-500">
-        🎮 <span className="text-slate-300">← →</span> / <span className="text-slate-300">A D</span> / влечи · Пауза{" "}
-        <span className="text-slate-300">P</span> · <span className="text-amber-300/90">фати ☕ по ред за комбо!</span>
+      <p className="flex max-w-xl flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center text-xs text-slate-500">
+        <Gamepad2 size={14} className="text-slate-400" />
+        <span className="text-slate-300">← →</span> / <span className="text-slate-300">A D</span> / влечи · Пауза{" "}
+        <span className="text-slate-300">P</span> ·
+        <span className="inline-flex items-center gap-1 text-amber-300/90">
+          фати <Coffee size={13} className="text-amber-300" /> по ред за комбо!
+        </span>
       </p>
     </div>
   );

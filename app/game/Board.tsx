@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode, RefObject } from "react";
+import { AlarmClock, BookOpen, Brain, FileText, Flame, GraduationCap, Heart, Pencil } from "lucide-react";
 import {
   BANNER_DURATION,
   BOARD_W,
@@ -18,6 +19,7 @@ import {
   SLOW_DURATION,
 } from "./config";
 import { objectiveProgress } from "./engine";
+import { GameIcon, type IconKey } from "./icons";
 
 interface BoardProps {
   view: Sim;
@@ -56,12 +58,12 @@ export default function Board({
         {/* Active power-up chips */}
         <div className="pointer-events-none absolute left-3 top-3 z-[6] flex gap-2">
           {view.magnetTimer > 0 && (
-            <EffectChip emoji="⚡" frac={view.magnetTimer / (MAGNET_DURATION * view.powerMult)} ring="ring-amber-300/50" bar="bg-amber-300" />
+            <EffectChip icon="energy" frac={view.magnetTimer / (MAGNET_DURATION * view.powerMult)} ring="ring-amber-300/50" bar="bg-amber-300" />
           )}
           {view.slowTimer > 0 && (
-            <EffectChip emoji="🧠" frac={view.slowTimer / (SLOW_DURATION * view.powerMult)} ring="ring-sky-300/50" bar="bg-sky-300" />
+            <EffectChip icon="focus" frac={view.slowTimer / (SLOW_DURATION * view.powerMult)} ring="ring-sky-300/50" bar="bg-sky-300" />
           )}
-          {view.shield && <EffectChip emoji="🛡️" frac={1} ring="ring-cyan-300/50" bar="bg-cyan-300" />}
+          {view.shield && <EffectChip icon="shield" frac={1} ring="ring-cyan-300/50" bar="bg-cyan-300" />}
         </div>
 
         {/* Goal line just above the player */}
@@ -87,11 +89,8 @@ export default function Board({
               }}
             >
               {item.golden && <span className="ss-pulse absolute inset-1 rounded-full bg-amber-300/30 blur-md" />}
-              <span
-                className="relative leading-none drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]"
-                style={{ fontSize: 34, transform: `rotate(${rot}deg)` }}
-              >
-                {item.emoji}
+              <span className="relative" style={{ transform: `rotate(${rot}deg)` }}>
+                <GameIcon name={item.icon} size={34} className="drop-shadow-[0_2px_6px_rgba(0,0,0,0.55)]" />
               </span>
             </div>
           );
@@ -116,7 +115,7 @@ export default function Board({
         {view.popups.map((p) => (
           <div
             key={p.id}
-            className={`pointer-events-none absolute left-0 top-0 whitespace-nowrap text-lg font-black will-change-transform ${
+            className={`pointer-events-none absolute left-0 top-0 flex items-center gap-1 whitespace-nowrap text-lg font-black will-change-transform ${
               p.tone === "good" ? "text-emerald-300" : p.tone === "bad" ? "text-rose-300" : "text-amber-300"
             }`}
             style={{
@@ -125,7 +124,8 @@ export default function Board({
               textShadow: "0 2px 8px rgba(0,0,0,0.6)",
             }}
           >
-            {p.text}
+            {p.icon && <GameIcon name={p.icon} size={16} />}
+            <span>{p.text}</span>
           </div>
         ))}
 
@@ -139,8 +139,8 @@ export default function Board({
           }}
         >
           <div className="relative h-full w-full" style={{ transform: `rotate(${tilt}deg)`, transformOrigin: "50% 80%" }}>
-            <span className="absolute left-1/2 -translate-x-1/2 leading-none" style={{ bottom: PLAYER_H - 6, fontSize: 30 }}>
-              🧑‍🎓
+            <span className="absolute left-1/2 -translate-x-1/2" style={{ bottom: PLAYER_H - 4 }}>
+              <GraduationCap size={26} strokeWidth={2.4} className="text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" />
             </span>
             <div
               className={`h-full w-full rounded-full bg-gradient-to-b from-sky-400 to-blue-600 ring-2 ${
@@ -168,8 +168,8 @@ export default function Board({
           <>
             <div className="pointer-events-none absolute inset-0 z-[7] ring-4 ring-inset ring-rose-500/40" />
             <div className="pointer-events-none absolute left-1/2 top-3 z-[8] -translate-x-1/2">
-              <span className="ss-pulse rounded-full bg-rose-600/80 px-3 py-1 text-sm font-black text-white shadow-lg">
-                ⏰ ДЕДЛАЈН!
+              <span className="ss-pulse flex items-center gap-1 rounded-full bg-rose-600/80 px-3 py-1 text-sm font-black text-white shadow-lg">
+                <AlarmClock size={15} strokeWidth={2.6} /> ДЕДЛАЈН!
               </span>
             </div>
           </>
@@ -211,9 +211,7 @@ function Dashboard({ view, levelLabel, levelName }: { view: Sim; levelLabel: str
     >
       {/* Level + score */}
       <div className="flex min-w-[150px] flex-col">
-        <span className="text-[11px] font-semibold uppercase tracking-widest text-sky-300/80">
-          {levelLabel}
-        </span>
+        <span className="text-[11px] font-semibold uppercase tracking-widest text-sky-300/80">{levelLabel}</span>
         <div className="flex items-baseline gap-2">
           <span className="text-2xl font-black text-white">{view.score}</span>
           <span className="text-xs font-medium text-slate-400">поени</span>
@@ -229,8 +227,8 @@ function Dashboard({ view, levelLabel, levelName }: { view: Sim; levelLabel: str
               {endless ? "Бран" : "Цел"}
             </span>
             {mult > 1 && (
-              <span className="ss-pulse rounded-full bg-amber-400/20 px-2 py-0.5 text-[11px] font-black text-amber-300 ring-1 ring-amber-300/40">
-                🔥 ×{mult}
+              <span className="ss-pulse flex items-center gap-0.5 rounded-full bg-amber-400/20 px-2 py-0.5 text-[11px] font-black text-amber-300 ring-1 ring-amber-300/40">
+                <Flame size={11} strokeWidth={2.6} /> ×{mult}
               </span>
             )}
           </div>
@@ -245,8 +243,8 @@ function Dashboard({ view, levelLabel, levelName }: { view: Sim; levelLabel: str
                   <span className="text-slate-500"> / {prog.target}</span>
                 </span>
                 {prog.timeLeft !== null && (
-                  <span className={`tabular-nums ${prog.timeLeft <= 5 ? "text-rose-300" : "text-amber-300"}`}>
-                    ⏱ {prog.timeLeft}s
+                  <span className={`flex items-center gap-0.5 tabular-nums ${prog.timeLeft <= 5 ? "text-rose-300" : "text-amber-300"}`}>
+                    <AlarmClock size={13} strokeWidth={2.4} /> {prog.timeLeft}s
                   </span>
                 )}
               </>
@@ -264,26 +262,24 @@ function Dashboard({ view, levelLabel, levelName }: { view: Sim; levelLabel: str
       {/* Lives */}
       <div className="flex min-w-[120px] flex-col items-end">
         <span className="text-[11px] font-semibold uppercase tracking-widest text-rose-300/80">Животи</span>
-        <div className="mt-1 flex flex-wrap justify-end gap-1 text-xl leading-none">
-          {Array.from({ length: livesSlots }).map((_, i) => (
-            <span
-              key={i}
-              className={i < view.lives ? "" : "opacity-30 grayscale"}
-              style={{ filter: i < view.lives ? "drop-shadow(0 0 6px rgba(244,63,94,0.6))" : undefined }}
-            >
-              {i < view.lives ? "❤️" : "🖤"}
-            </span>
-          ))}
+        <div className="mt-1 flex flex-wrap justify-end gap-1">
+          {Array.from({ length: livesSlots }).map((_, i) =>
+            i < view.lives ? (
+              <Heart key={i} size={18} className="fill-rose-500 text-rose-500 drop-shadow-[0_0_6px_rgba(244,63,94,0.6)]" />
+            ) : (
+              <Heart key={i} size={18} className="text-slate-600" />
+            ),
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function EffectChip({ emoji, frac, ring, bar }: { emoji: string; frac: number; ring: string; bar: string }) {
+function EffectChip({ icon, frac, ring, bar }: { icon: IconKey; frac: number; ring: string; bar: string }) {
   return (
     <div className={`flex flex-col items-center gap-1 rounded-xl bg-slate-900/70 px-2 py-1 ring-1 ${ring}`}>
-      <span className="text-lg leading-none">{emoji}</span>
+      <GameIcon name={icon} size={18} />
       <div className="h-1 w-7 overflow-hidden rounded-full bg-white/15">
         <div className={`h-full ${bar}`} style={{ width: `${clamp(frac * 100, 0, 100)}%` }} />
       </div>
@@ -293,21 +289,17 @@ function EffectChip({ emoji, frac, ring, bar }: { emoji: string; frac: number; r
 
 function Ambient() {
   const deco = [
-    { e: "📚", left: "8%", top: "18%", d: "0s", s: 26 },
-    { e: "✏️", left: "82%", top: "12%", d: "1.1s", s: 22 },
-    { e: "📖", left: "68%", top: "30%", d: "2.2s", s: 24 },
-    { e: "🧠", left: "20%", top: "40%", d: "0.6s", s: 22 },
-    { e: "📝", left: "45%", top: "16%", d: "1.7s", s: 20 },
+    { Icon: BookOpen, left: "8%", top: "18%", d: "0s", s: 26 },
+    { Icon: Pencil, left: "82%", top: "12%", d: "1.1s", s: 22 },
+    { Icon: FileText, left: "68%", top: "30%", d: "2.2s", s: 24 },
+    { Icon: Brain, left: "20%", top: "40%", d: "0.6s", s: 22 },
+    { Icon: GraduationCap, left: "45%", top: "16%", d: "1.7s", s: 22 },
   ];
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {deco.map((d, i) => (
-        <span
-          key={i}
-          className="ss-float absolute select-none opacity-[0.08]"
-          style={{ left: d.left, top: d.top, fontSize: d.s, animationDelay: d.d }}
-        >
-          {d.e}
+      {deco.map(({ Icon, left, top, d, s }, i) => (
+        <span key={i} className="ss-float absolute" style={{ left, top, animationDelay: d }}>
+          <Icon size={s} className="text-white/10" />
         </span>
       ))}
     </div>

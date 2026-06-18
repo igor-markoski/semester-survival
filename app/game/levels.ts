@@ -4,11 +4,12 @@
 // objective and modifiers so it plays differently — not just faster.
 // ---------------------------------------------------------------------------
 import type { ModifierId, Objective, SpawnEntry } from "./config";
+import type { IconKey } from "./icons";
 
 export interface CampaignLevel {
   week: number;
   name: string;
-  emoji: string;
+  icon: IconKey;
   blurb: string;
   objective: Objective;
   timeLimit: number; // seconds; 0 = none. For survive/noHit this is the goal.
@@ -27,7 +28,7 @@ export const CAMPAIGN_LEVELS: CampaignLevel[] = [
   {
     week: 1,
     name: "Прв ден",
-    emoji: "📗",
+    icon: "book",
     blurb: "Семестарот почнува лежерно. Навикни се на фаќањето.",
     objective: { type: "collectCoffee", target: 6 },
     timeLimit: 0,
@@ -47,7 +48,7 @@ export const CAMPAIGN_LEVELS: CampaignLevel[] = [
   {
     week: 2,
     name: "Ред за кафе",
-    emoji: "🌬️",
+    icon: "wind",
     blurb: "Ветер дува низ кампусот — предметите се нишаат.",
     objective: { type: "score", target: 30 },
     timeLimit: 0,
@@ -68,7 +69,7 @@ export const CAMPAIGN_LEVELS: CampaignLevel[] = [
   {
     week: 3,
     name: "Прв колоквиум",
-    emoji: "📝",
+    icon: "clipboard",
     blurb: "Колоквиумска недела! Багови во ројеви. Издржи!",
     objective: { type: "survive", target: 45 },
     timeLimit: 45,
@@ -89,7 +90,7 @@ export const CAMPAIGN_LEVELS: CampaignLevel[] = [
   {
     week: 4,
     name: "Ноќно бубање",
-    emoji: "🌙",
+    icon: "moon",
     blurb: "Учиш ноќе на мрак, а дедлајните забрзуваат сè.",
     objective: { type: "collectCoffee", target: 12 },
     timeLimit: 45,
@@ -110,7 +111,7 @@ export const CAMPAIGN_LEVELS: CampaignLevel[] = [
   {
     week: 5,
     name: "Хаос пред крај",
-    emoji: "🧊",
+    icon: "ice",
     blurb: "Лизгав под и дистракции што те бркаат. Фати ги испитите!",
     objective: { type: "collectExam", target: 4 },
     timeLimit: 0,
@@ -132,7 +133,7 @@ export const CAMPAIGN_LEVELS: CampaignLevel[] = [
   {
     week: 6,
     name: "Финален испит",
-    emoji: "🎓",
+    icon: "cap",
     blurb: "Сè на едно место: рој, дедлајн и мрак. Преживеј и дипломирај!",
     objective: { type: "survive", target: 60 },
     timeLimit: 60,
@@ -173,9 +174,9 @@ export function objectiveLabel(o: Objective): string {
     case "score":
       return `Собери ${o.target} поени`;
     case "collectCoffee":
-      return `Фати ${o.target} × ☕`;
+      return `Фати ${o.target} кафиња`;
     case "collectExam":
-      return `Фати ${o.target} × 📄`;
+      return `Фати ${o.target} испити`;
     case "survive":
       return `Преживеј ${o.target} секунди`;
     case "combo":

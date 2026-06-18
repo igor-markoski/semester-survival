@@ -43,7 +43,7 @@ import {
   type Popup,
   POPUP_LIFE,
   POWER_CHANCE,
-  POWER_LABEL,
+  POWER_POPUP,
   type PowerKind,
   RAMP_MAX,
   RAMP_PER_SEC,
@@ -59,6 +59,7 @@ import {
   WIND_FORCE,
   WIND_PERIOD,
 } from "./config";
+import type { IconKey } from "./icons";
 import { CAMPAIGN_LEVELS, ENDLESS_BASE, objectiveLabel } from "./levels";
 import { computeEffects } from "./upgrades";
 
@@ -182,7 +183,7 @@ function makeItem(sim: Sim, typeId: ItemTypeId, speedFactor: number): FallingIte
     type: typeId,
     group: type.group,
     power: type.power,
-    emoji: pick(type.emojis),
+    icon: pick(type.icons),
     points,
     x: randRange(6, BOARD_W - ITEM_SIZE - 6),
     y: -ITEM_SIZE,
@@ -209,8 +210,8 @@ function spawnItem(sim: Sim, speedFactor: number): FallingItem {
 // ---------------------------------------------------------------------------
 // Per-frame step
 // ---------------------------------------------------------------------------
-function popup(sim: Sim, x: number, y: number, text: string, tone: Tone): Popup {
-  return { id: sim.nextId++, x, y, text, tone, life: POPUP_LIFE };
+function popup(sim: Sim, x: number, y: number, text: string, tone: Tone, icon?: IconKey): Popup {
+  return { id: sim.nextId++, x, y, text, tone, life: POPUP_LIFE, icon };
 }
 
 export function step(
@@ -347,7 +348,7 @@ export function step(
           sim.flashTone = "power";
           sim.flashTimer = FLASH_DURATION;
           addBurst(sim, cx, cy, "power");
-          sim.popups.push(popup(sim, cx, cy, "🛡️ Блокирано", "power"));
+          sim.popups.push(popup(sim, cx, cy, "Блокирано", "power", "shield"));
           events.push({ t: "shield" });
         } else {
           sim.lives -= 1;
@@ -357,7 +358,7 @@ export function step(
           sim.flashTimer = FLASH_DURATION;
           sim.shakeTimer = SHAKE_DURATION;
           addBurst(sim, cx, cy, "bad");
-          sim.popups.push(popup(sim, cx, cy, "−1 ❤️", "bad"));
+          sim.popups.push(popup(sim, cx, cy, "−1", "bad", "heart"));
           events.push({ t: "bad" });
         }
       } else if (item.group === "power" && item.power) {
@@ -367,14 +368,14 @@ export function step(
         sim.flashTone = "power";
         sim.flashTimer = FLASH_DURATION;
         addBurst(sim, cx, cy, "power");
-        sim.popups.push(popup(sim, cx, cy, POWER_LABEL[item.power], "power"));
+        sim.popups.push(popup(sim, cx, cy, POWER_POPUP[item.power].text, "power", POWER_POPUP[item.power].icon));
         events.push({ t: "power", p: item.power });
       } else if (item.group === "heart") {
         sim.lives = Math.min(MAX_LIVES, sim.lives + 1);
         sim.flashTone = "good";
         sim.flashTimer = FLASH_DURATION;
         addBurst(sim, cx, cy, "good");
-        sim.popups.push(popup(sim, cx, cy, "+1 ❤️", "good"));
+        sim.popups.push(popup(sim, cx, cy, "+1", "good", "heart"));
         events.push({ t: "heart" });
       }
       continue;

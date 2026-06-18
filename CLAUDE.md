@@ -8,9 +8,17 @@ resources** (coffee, exams, power-ups) while **dodging distractions** (bugs,
 phones, games) across **three levels**. Reach **50 points** to pass the semester;
 lose all your lives and you're "seeing you in August."
 
-Everything is rendered with **HTML/DOM + CSS + system emojis** — there are **no
-image/sprite/audio asset files** anywhere in the project. Sound is synthesised at
+Everything is rendered with **HTML/DOM + CSS + lucide-react SVG icons** — there
+are **no image/sprite/audio asset files** anywhere in the project (icons are code,
+not files, and render identically across browsers). Sound is synthesised at
 runtime with the Web Audio API.
+
+> ⚠️ **Out of date:** this doc still describes the original 3-level version. The
+> game is now a 6-week **campaign** + **endless** mode with per-level objectives &
+> modifiers, an upgrade shop, exam quizzes, achievements and difficulty modes
+> (see `levels.ts`, `upgrades.ts`, `quiz.ts`, `achievements.ts`, `save.ts`,
+> `engine.ts`, `Board.tsx`, `screens.tsx`, `icons.tsx`). The sections below need a
+> refresh.
 
 ---
 
@@ -22,6 +30,7 @@ runtime with the Web Audio API.
 | UI library     | **React 19.2**                                                     |
 | Styling        | **Tailwind CSS v4** (`@import "tailwindcss"` in `globals.css`)     |
 | Win celebration| **canvas-confetti** (dynamically imported, browser-only)          |
+| Icons          | **lucide-react** SVG components via `app/game/icons.tsx` (no emoji) |
 | Sound          | **Web Audio API** oscillators (no files) — `app/game/sound.ts`     |
 | Language       | TypeScript (strict), all UI copy in **Macedonian (Cyrillic)**     |
 
@@ -218,8 +227,9 @@ npx eslint app   # lint (next lint was removed in Next 16; call eslint directly)
   sound/confetti/persistence in the component.
 - **All physics in logical pixels** (800×500). Never read scaled DOM sizes into
   the sim except when mapping pointer input (which divides by `scaleRef`).
-- **No asset files.** Visuals = emojis + CSS shapes; audio = Web Audio. Don't add
-  images/sprites/sound files.
+- **No asset files.** Visuals = lucide-react SVG icons (`icons.tsx`) + CSS shapes;
+  audio = Web Audio. Don't add images/sprites/sound files. New game visuals should
+  add an `IconKey` to the registry, not hardcode an emoji.
 - **Browser-only libs** (canvas-confetti) must be **dynamically imported** inside
   handlers so SSR/prerender never touches `window`.
 - **UI copy is Macedonian Cyrillic** — match the existing tone.

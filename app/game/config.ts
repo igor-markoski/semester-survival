@@ -5,6 +5,7 @@
 // in their own files; the simulation engine lives in engine.ts.
 // Coordinates are "logical" pixels; the board is CSS-scaled to fit any screen.
 // ---------------------------------------------------------------------------
+import type { IconKey } from "./icons";
 
 // --- Board geometry --------------------------------------------------------
 export const BOARD_W = 800; // play-field width
@@ -92,26 +93,26 @@ export type ItemTypeId =
 export interface ItemType {
   id: ItemTypeId;
   group: ItemGroup;
-  emojis: string[];
+  icons: IconKey[]; // a random one is chosen at spawn
   points: number;
   power?: PowerKind;
 }
 
 export const ITEM_TYPES: Record<ItemTypeId, ItemType> = {
-  coffee: { id: "coffee", group: "good", emojis: ["☕"], points: COFFEE_POINTS },
-  exam: { id: "exam", group: "good", emojis: ["📄"], points: EXAM_POINTS },
-  bug: { id: "bug", group: "bad", emojis: ["🪲"], points: 0 },
-  distraction: { id: "distraction", group: "bad", emojis: ["📱", "🎮"], points: 0 },
-  energy: { id: "energy", group: "power", emojis: ["⚡"], points: 0, power: "magnet" },
-  focus: { id: "focus", group: "power", emojis: ["🧠"], points: 0, power: "slow" },
-  shield: { id: "shield", group: "power", emojis: ["🛡️"], points: 0, power: "shield" },
-  heart: { id: "heart", group: "heart", emojis: ["❤️"], points: 0 },
+  coffee: { id: "coffee", group: "good", icons: ["coffee"], points: COFFEE_POINTS },
+  exam: { id: "exam", group: "good", icons: ["exam"], points: EXAM_POINTS },
+  bug: { id: "bug", group: "bad", icons: ["bug"], points: 0 },
+  distraction: { id: "distraction", group: "bad", icons: ["phone", "gamepad"], points: 0 },
+  energy: { id: "energy", group: "power", icons: ["energy"], points: 0, power: "magnet" },
+  focus: { id: "focus", group: "power", icons: ["focus"], points: 0, power: "slow" },
+  shield: { id: "shield", group: "power", icons: ["shield"], points: 0, power: "shield" },
+  heart: { id: "heart", group: "heart", icons: ["heart"], points: 0 },
 };
 
-export const POWER_LABEL: Record<PowerKind, string> = {
-  magnet: "⚡ Магнет",
-  slow: "🧠 Фокус",
-  shield: "🛡️ Штит",
+export const POWER_POPUP: Record<PowerKind, { icon: IconKey; text: string }> = {
+  magnet: { icon: "energy", text: "Магнет" },
+  slow: { icon: "focus", text: "Фокус" },
+  shield: { icon: "shield", text: "Штит" },
 };
 
 export interface SpawnEntry {
@@ -127,7 +128,7 @@ export type Difficulty = "easy" | "normal" | "hard";
 export interface DifficultySettings {
   id: Difficulty;
   label: string;
-  emoji: string;
+  icon: IconKey;
   livesBonus: number;
   speedMul: number;
   goalMul: number; // scales objective targets
@@ -135,9 +136,9 @@ export interface DifficultySettings {
 }
 
 export const DIFFICULTIES: Record<Difficulty, DifficultySettings> = {
-  easy: { id: "easy", label: "Лесно", emoji: "🌱", livesBonus: 1, speedMul: 0.85, goalMul: 0.85, coinMul: 0.8 },
-  normal: { id: "normal", label: "Нормално", emoji: "⚖️", livesBonus: 0, speedMul: 1, goalMul: 1, coinMul: 1 },
-  hard: { id: "hard", label: "Тешко", emoji: "🔥", livesBonus: -1, speedMul: 1.22, goalMul: 1.15, coinMul: 1.5 },
+  easy: { id: "easy", label: "Лесно", icon: "easy", livesBonus: 1, speedMul: 0.85, goalMul: 0.85, coinMul: 0.8 },
+  normal: { id: "normal", label: "Нормално", icon: "normal", livesBonus: 0, speedMul: 1, goalMul: 1, coinMul: 1 },
+  hard: { id: "hard", label: "Тешко", icon: "hard", livesBonus: -1, speedMul: 1.22, goalMul: 1.15, coinMul: 1.5 },
 };
 
 // ---------------------------------------------------------------------------
@@ -161,18 +162,18 @@ export type ModifierId = "wind" | "night" | "ice" | "swarm" | "homing" | "deadli
 
 export interface ModifierInfo {
   id: ModifierId;
-  emoji: string;
+  icon: IconKey;
   name: string;
   desc: string;
 }
 
 export const MODIFIERS: Record<ModifierId, ModifierInfo> = {
-  wind: { id: "wind", emoji: "🌬️", name: "Ветар", desc: "Предметите се нишаат настрана." },
-  night: { id: "night", emoji: "🌙", name: "Мрак", desc: "Гледаш само околу студентот." },
-  ice: { id: "ice", emoji: "🧊", name: "Мраз", desc: "Лизгав паддл со инерција." },
-  swarm: { id: "swarm", emoji: "🐝", name: "Рој", desc: "Багови во групни налети." },
-  homing: { id: "homing", emoji: "🧲", name: "Гонење", desc: "Дистракциите те бркаат." },
-  deadline: { id: "deadline", emoji: "⏰", name: "Дедлајн", desc: "Повремени налети на брзина." },
+  wind: { id: "wind", icon: "wind", name: "Ветар", desc: "Предметите се нишаат настрана." },
+  night: { id: "night", icon: "moon", name: "Мрак", desc: "Гледаш само околу студентот." },
+  ice: { id: "ice", icon: "ice", name: "Мраз", desc: "Лизгав паддл со инерција." },
+  swarm: { id: "swarm", icon: "swarm", name: "Рој", desc: "Багови во групни налети." },
+  homing: { id: "homing", icon: "homing", name: "Гонење", desc: "Дистракциите те бркаат." },
+  deadline: { id: "deadline", icon: "deadline", name: "Дедлајн", desc: "Повремени налети на брзина." },
 };
 
 // ---------------------------------------------------------------------------
@@ -186,7 +187,7 @@ export interface FallingItem {
   type: ItemTypeId;
   group: ItemGroup;
   power?: PowerKind;
-  emoji: string;
+  icon: IconKey;
   points: number;
   x: number;
   y: number;
@@ -202,6 +203,7 @@ export interface Popup {
   text: string;
   tone: Tone;
   life: number;
+  icon?: IconKey;
 }
 
 export interface Particle {
