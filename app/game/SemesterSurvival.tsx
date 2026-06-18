@@ -514,6 +514,15 @@ export default function SemesterSurvival() {
           фати <Coffee size={13} className="text-amber-300" /> по ред за комбо!
         </span>
       </p>
+
+      <footer className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[11px] text-slate-600">
+        <span className="uppercase tracking-widest">Изработено од</span>
+        <span className="font-semibold text-slate-400">233003</span>
+        <span className="text-slate-700">·</span>
+        <span className="font-semibold text-slate-400">233241</span>
+        <span className="text-slate-700">·</span>
+        <span className="font-semibold text-slate-400">233045</span>
+      </footer>
     </div>
   );
 }
